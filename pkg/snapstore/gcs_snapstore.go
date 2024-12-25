@@ -63,7 +63,7 @@ func NewGCSSnapStore(config *brtypes.SnapstoreConfig) (*GCSSnapStore, error) {
 
 	var opts []option.ClientOption // no need to explicitly set store credentials here since the Google SDK picks it up from the standard environment variable
 	var emulatorConfig gcsEmulatorConfig
-	emulatorConfig.enabled = isEmulatorEnabled(config)
+	emulatorConfig.enabled = config.IsEmulatorEnabled || isEmulatorEnabled(config)
 	endpoint, err := getGCSStorageAPIEndpoint(config)
 	if err != nil {
 		return nil, err
@@ -103,6 +103,10 @@ func NewGCSSnapStore(config *brtypes.SnapstoreConfig) (*GCSSnapStore, error) {
 func getGCSStorageAPIEndpoint(config *brtypes.SnapstoreConfig) (string, error) {
 	if gcsApplicationCredentialsPath, isSet := os.LookupEnv(getEnvPrefixString(config.IsSource) + envStoreCredentials); isSet {
 		storageAPIEndpointFilePath := path.Join(path.Dir(gcsApplicationCredentialsPath), fileNameStorageAPIEndpoint)
+		if _, err := os.Stat(storageAPIEndpointFilePath); err != nil {
+			// if the file does not exist, then there is no override for the storage API endpoint
+			return "", nil
+		}
 		endpoint, err := os.ReadFile(storageAPIEndpointFilePath)
 		if err != nil {
 			return "", fmt.Errorf("error getting storage API endpoint from %v", storageAPIEndpointFilePath)
