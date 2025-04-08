@@ -16,6 +16,9 @@ sleep 5
 
 # Modify the kubeconfig file to update the server field
 modify_kubeconfig() {
+  apt update
+  apt install -y python3-pip
+  apt install -y python3-yaml
   kubeconfig_path="hack/e2e-test/infrastructure/kind/kubeconfig"
   if [[ -f "$kubeconfig_path" ]]; then
     echo "Modifying kubeconfig file at $kubeconfig_path"
