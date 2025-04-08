@@ -9,6 +9,6 @@ set -o pipefail
 
 KUBECONFIG=$1
 
-kubectl --kubeconfig=${KUBECONFIG} apply -f ./hack/e2e-test/infrastructure/fake-gcs-server/fake-gcs-server.yaml
-kubectl --kubeconfig=${KUBECONFIG} rollout status deploy/fake-gcs
-kubectl --kubeconfig=${KUBECONFIG} wait --for=condition=ready pod -l app=fake-gcs --timeout=240s
+kubectl --kubeconfig=${KUBECONFIG} apply -f ./hack/e2e-test/infrastructure/fake-gcs-server/fake-gcs-server.yaml --insecure-skip-tls-verify
+kubectl --kubeconfig=${KUBECONFIG} rollout status deploy/fake-gcs --insecure-skip-tls-verify
+kubectl --kubeconfig=${KUBECONFIG} wait --for=condition=ready pod -l app=fake-gcs --timeout=240s --insecure-skip-tls-verify
