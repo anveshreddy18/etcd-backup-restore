@@ -126,6 +126,8 @@ function setup_awscli() {
 function create_aws_container() {
     echo "Setting up AWS infrastructure..."
     echo "Creating test bucket..."
+    echo "Testing whether the port exists, AWS"
+    lsof -i :4566
     result=$(aws s3api get-bucket-location --bucket ${TEST_ID} 2>&1 || true)
     if [[ $result == *NoSuchBucket* ]]; then
       echo "Creating S3 bucket ${TEST_ID} in region ${AWS_DEFAULT_REGION}"
@@ -191,6 +193,8 @@ function setup_aws_e2e() {
 function create_gcp_container() {
   echo "Setting up GCS infrastructure..."
   echo "Creating test bucket..."
+  echo "Testing whether the port exists, GCP"
+  lsof -i :4443
   if [[ -z ${GOOGLE_EMULATOR_HOST:-""} ]]; then
     if ! gsutil mb "gs://${TEST_ID}"; then
       echo "Failed to create GCS bucket ${TEST_ID}."
@@ -279,6 +283,8 @@ function setup_gcp_e2e() {
 function create_azure_container() {
   echo "Setting up Azure infrastructure..."
   echo "Creating test bucket..."
+  echo "Testing whether the port exists, Azure"
+  lsof -i :10000
   if [[ -n ${AZURITE_DOMAIN:-""} ]]; then
     if ! az storage container create --connection-string "${AZURE_STORAGE_CONNECTION_STRING}" --name "${TEST_ID}"; then
       echo "Failed to create Azure test bucket."
