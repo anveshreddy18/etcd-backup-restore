@@ -35,11 +35,16 @@ server_url = data["clusters"][0]["cluster"]["server"]
 if "127.0.0.1" in server_url:
     port = server_url.split(":")[-1]
     data["clusters"][0]["cluster"]["server"] = f"https://host.docker.internal:{port}"
+    data["clusters"][0]["cluster"]["insecure-skip-tls-verify"] = True
+
+# Remove the "certificate-authority-data" field
+if "certificate-authority-data" in data["clusters"][0]["cluster"]:
+    del data["clusters"][0]["cluster"]["certificate-authority-data"]
 
 with open(kubeconfig_path, "w") as f:
     yaml.safe_dump(data, f)
 
-print(f"Updated server field in {kubeconfig_path}")
+print(f"Updated server field and removed 'certificate-authority-data' in {kubeconfig_path}")
 EOF
   else
     echo "Kubeconfig file not found at $kubeconfig_path"
